@@ -13,7 +13,7 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <Calendar style={style}  width='300px' />
+        <Calendar style={style} width='400px' />
       </div>
     );
   }
