@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import moment from 'moment';
 import onClickOutside from "react-onclickoutside";
 
@@ -33,12 +34,13 @@ class Month extends Component {
   months = moment.months();
 
   render() {
-    let liMonths = this.months.map((m)=>{
+    let year = this.props.currentYear;
+
+    let liMonths = this.months.map((m, i)=>{ 
+      let j = i+1;
       return (
         <li key={m}>
-          <button type="button" className="reset" onClick={this.chooseMonth.bind(this, m)}>
-            {m}
-          </button>
+          <Link to={'/'+(j<10?'0'+j:j)+'-'+year} onClick={this.chooseMonth.bind(this, m)}>{m}</Link>
         </li>
       )
     })

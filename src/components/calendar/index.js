@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import moment from 'moment';
 import Month from './Month';
 import Year from './Year';
@@ -8,57 +9,45 @@ class Calendar extends Component {
 
   constructor(props){
     super(props);
-    this.width = props.width || '400px';
-    this.style = props.style || {};
     this.state = {
-      dateContext: moment(),
-      today: moment()
     }
-    this.style.width = this.width;
   }
 
   weekdaysShort = moment.weekdaysShort();
 
 
   year = () => {
-    return this.state.dateContext.format('Y');
+    return this.props.dateContext.format('Y');
   }
   month = () => {
-    return this.state.dateContext.format('MMMM');
+    return this.props.dateContext.format('MMMM');
   }
   daysInMonth = () => {
-    return this.state.dateContext.daysInMonth();
+    return this.props.dateContext.daysInMonth();
   }
   currentDay = () => {
-    return this.state.today.format('D');
+    return this.props.today.format('D');
   }
   firstDayOfMonth = () => {
-    return moment(this.state.dateContext).startOf('month').format('d')
+    return moment(this.props.dateContext).startOf('month').format('d')
   }
 
   changeMonth(newMonth) {
-    let dateContext = moment(this.state.dateContext).month(newMonth);
-    this.setState({      
-      dateContext: dateContext
-    })
+    let dateContext = moment(this.props.dateContext).month(newMonth);
+    this.props.setNewContext(dateContext);
   }
   changeYear(newYear) {
-    let dateContext = moment(this.state.dateContext).year(newYear);
-    this.setState({      
-      dateContext: dateContext
-    })
+    let dateContext = moment(this.props.dateContext).year(newYear);
+    this.props.setNewContext(dateContext);
+
   }
   showPrevMonth(){
-    let dateContext = moment(this.state.dateContext).subtract(1, 'month')
-    this.setState({      
-      dateContext: dateContext
-    })
+    let dateContext = moment(this.props.dateContext).subtract(1, 'month')
+    this.props.setNewContext(dateContext);
   }
   showNextMonth(){
-    let dateContext = moment(this.state.dateContext).add(1, 'month')
-    this.setState({
-      dateContext: dateContext
-    })
+    let dateContext = moment(this.props.dateContext).add(1, 'month')
+    this.props.setNewContext(dateContext);
   }
 
   render() {
@@ -77,11 +66,14 @@ class Calendar extends Component {
     for (let j=1; j <= this.daysInMonth(); j++){
       let className = ( 
         j == this.currentDay() && 
-        this.month() == moment(this.state.today).format('MMMM') &&
-        this.year() == moment(this.state.today).format('Y') ? 'slot day current-day' : 'slot day')
+        this.month() == moment(this.props.today).format('MMMM') &&
+        this.year() == moment(this.props.today).format('Y') ? 'slot day current-day' : 'slot day');
+      let dayString = (j<10?'0'+j:j)+'-'+this.props.dateContext.format('MM')+'-'+ this.year();
       daysInMonth.push(
         <td key={j} className={className}>
-          <span>{j}</span>
+          <span>
+            <Link to={'/calendar/'+dayString} >{j}</Link>
+          </span>
         </td>
       )
     }
@@ -117,23 +109,31 @@ class Calendar extends Component {
       )
     })
 
-
+    let prevMonth = moment(this.props.dateContext).subtract(1, 'month')
+    let prevMonthPath = prevMonth.format('MM') +'-'+ prevMonth.format('Y');
+    let nextMonth = moment(this.props.dateContext).add(1, 'month')
+    let nextMonthPath = nextMonth.format('MM') +'-'+ nextMonth.format('Y');
 
     return (
-      <div className="calendar-container" style={this.style}>
+      <div className="calendar-container">
         <table className="calendar">
           <thead>
             <tr className="calendar-header">
               <td colSpan="3">
-                <Month currentMonth={this.month()} onGetMonth={this.changeMonth.bind(this)}  />
+                <Month 
+                  currentMonth={this.month()} 
+                  currentYear={this.year()} 
+                  onGetMonth={this.changeMonth.bind(this)} />
               </td>
               <td colSpan="2">
-                <Year currentYear={this.year()} onGetYear={this.changeYear.bind(this)}  />
+                <Year 
+                  currentYear={this.year()} 
+                  onGetYear={this.changeYear.bind(this)} />
               </td>
               <td colSpan="2">
                 <span>
-                  <button className="reset" onClick={this.showPrevMonth.bind(this)}>&#9668;</button>
-                  <button className="reset" onClick={this.showNextMonth.bind(this)}>&#9658;</button>
+                  <Link to={'/'+prevMonthPath} onClick={this.showPrevMonth.bind(this)}>&#9668;</Link>
+                  <Link to={'/'+nextMonthPath} onClick={this.showNextMonth.bind(this)}>&#9658;</Link>
                 </span>
               </td>
             </tr>

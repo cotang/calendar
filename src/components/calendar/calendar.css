@@ -1,5 +1,7 @@
 .calendar-container{
-  /*border: 1px solid lightblue;*/
+  width: 400px;
+  position: relative;
+  margin: 50px auto;
 }
 .calendar{
   background-color: white;
